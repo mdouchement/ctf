@@ -19,7 +19,8 @@ func main() {
 	timer := time.Now()
 
 	c := irc.SimpleClient("GeorgeAbitbol")
-	c.EnableStateTracking()
+	c.DisableStateTracking()
+	c.Config().Timeout = 100 * time.Millisecond
 
 	quit := make(chan bool)
 	c.HandleFunc(irc.DISCONNECTED, func(conn *irc.Conn, line *irc.Line) { quit <- true })
@@ -36,10 +37,10 @@ func main() {
 		if line.Nick == "Candy" {
 			if strings.Contains(line.Text(), " / ") {
 				number := processResult(line.Text())
+				c.Privmsg("Candy", fmt.Sprintf("!ep1 -rep %.2f", number))
 				log.Info("Elapsed time to get response: ", time.Since(timer))
 				log.Info(line.Text())
-				log.Info(fmt.Sprintf("Candy -> !ep1 -rep %.1f", number))
-				c.Privmsg("Candy", fmt.Sprintf("!ep1 -rep %.1f", number))
+				log.Info(fmt.Sprintf("Candy -> !ep1 -rep %.2f", number))
 			} else {
 				log.Info(line.Text())
 				quit <- true
@@ -62,7 +63,7 @@ func processResult(response string) float64 {
 		numbers = append(numbers, float64(i))
 	}
 	sqrt := math.Sqrt(numbers[0])
-	return extendedmath.RoundPlus(sqrt*numbers[1], 1)
+	return extendedmath.RoundPlus(sqrt*numbers[1], 2)
 }
 
 func check(err error) {
