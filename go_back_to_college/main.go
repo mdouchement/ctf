@@ -16,6 +16,8 @@ import (
 func main() {
 	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
 
+	timer := time.Now()
+
 	c := irc.SimpleClient("GeorgeAbitbol")
 	c.EnableStateTracking()
 
@@ -26,14 +28,16 @@ func main() {
 	c.HandleFunc(irc.JOIN, func(conn *irc.Conn, line *irc.Line) {
 		time.Sleep(1 * time.Second)
 		log.Info("Candy -> !ep1")
+		timer = time.Now()
 		c.Privmsg("Candy", "!ep1")
 	})
 
 	c.HandleFunc(irc.PRIVMSG, func(conn *irc.Conn, line *irc.Line) {
 		if line.Nick == "Candy" {
 			if strings.Contains(line.Text(), " / ") {
-				log.Info(line.Text())
 				number := processResult(line.Text())
+				log.Info("Elapsed time to get response: ", time.Since(timer))
+				log.Info(line.Text())
 				log.Info(fmt.Sprintf("Candy -> !ep1 -rep %.1f", number))
 				c.Privmsg("Candy", fmt.Sprintf("!ep1 -rep %.1f", number))
 			} else {
