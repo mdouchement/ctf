@@ -27,7 +27,6 @@ func main() {
 
 	c.HandleFunc(irc.CONNECTED, func(conn *irc.Conn, line *irc.Line) { conn.Join("#root-me_challenge") })
 	c.HandleFunc(irc.JOIN, func(conn *irc.Conn, line *irc.Line) {
-		time.Sleep(1 * time.Second)
 		log.Info("Candy -> !ep1")
 		timer = time.Now()
 		c.Privmsg("Candy", "!ep1")
